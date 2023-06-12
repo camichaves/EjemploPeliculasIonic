@@ -7,6 +7,11 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
+buscar(event:any) {
+  console.log(event.detail.value)
+  // consumir api de busqueda como se hace en tab1
+}
+
   constructor() {}
 
 }

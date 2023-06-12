@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Pelicula } from '../interfaces/interfaces';
 import { MoviesService } from '../services/movies.service';
 import { register } from 'swiper/element/bundle';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController } from '@ionic/angular';
 register();
 @Component({
   selector: 'app-tab1',
@@ -13,13 +13,20 @@ export class Tab1Page implements OnInit{
 
   arregloPeliculas: Pelicula[] = [];
   constructor(private peliculasService:MoviesService, 
-    private alertController: AlertController) {
+    private alertController: AlertController,
+    private loadingController: LoadingController) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const loading = await this.loadingController.create({
+      message: 'Cargando peliculas...',
+    });
+
+    loading.present();
     this.peliculasService.getPeliculas().subscribe(respuesta =>{
       console.log(respuesta.results)
       this.arregloPeliculas=respuesta.results
+      loading.dismiss();
     })
   }
 
@@ -30,7 +37,13 @@ export class Tab1Page implements OnInit{
         header: respuestaApi.title,
         subHeader: respuestaApi.original_title,
         message: respuestaApi.overview,
-        buttons: ['OK'],
+        buttons: ['OK', {
+          text: "Agregar a Favoritas",
+          handler: () => {
+            console.log("Holis")
+            this.peliculasService.agregarPeliculaFavoritas(respuestaApi)
+          }
+        }],
       });
   
       await alert.present();
